@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="PRAGMA" content="NO-CACHE" />
+	<meta name="description" content="This is a web UI for doing client server automation preprocessing, which is provided by a JavaScript file csapreproc.js." />
+	<title>Client Server Automation Preprocessor</title>
+	<meta name="viewport" content="width=device-width" />
+	<link rel="stylesheet" type="text/css" href="../assets/orion/built-editor.css"/>
+	<link rel="stylesheet" type="text/css" href="../assets/style.css"/>
+	<link rel="stylesheet" href="../assets/foundation/foundation.min.css">
+	<script src="../esprima.js"></script>
+	<script src="../escodegen.browser.js"></script>
+	<script src="../assets/orion/built-editor.min.js"></script>
+	<script src="../assets/orion/customeditor.js"></script>
+	<script src="csapreproc.js"></script>
+	<script>
+		//for testing and debugging
+		function loadPrgCode(isLib, filename) {
+			var code;
+			if (typeof window.editor !== 'undefined') {
+				code = window.editor.getText();
+			} else {
+				code = id('code').value;
+			}
+			if (CSAPREPROC.loadCode(code, isLib, filename)) {
+				if (isLib) {
+				}
+			}
+		}
+		function showServerConnects() {
+			document.getElementById('txt1').value = CSAPREPROC.getServerCodeCount();
+		}
+		function showServerCode() {
+			var idx = parseInt(document.getElementById('txt1').value);
+			var code = CSAPREPROC.getServerCode(idx);
+		}
+		window.addEventListener('load', function () {
+			document.getElementById('h4').innerHTML = 'CSA JavaScript Preprocessor version:'+getPreprocessorVersion();
+		});
+	</script>
+</head>
+<body>
+	<!-- Title and subtitle -->
+	<div class="row">
+		<div class="twelve columns">
+			<h3 class="subheader"><strong>Client Server Automation Preprocessor</strong><br /> processing JavaScript code to implement client-server-automation</h3>
+			<h4 id="h4"></h4>
+		</div>
+	</div>
+	<!-- Main content -->
+	<div class="row" style="width:95%">
+		<div class="eight columns" style="width:100%">
+			<pre id="editor" spellcheck="false" style="height: 350px; width:100%"><xmp>
+//Code to be loaded is displayed here. Code generated is also displayed here.
+			</xmp></pre>
+			<button onclick="loadPrgCode(false)">Load Programming Code</button>
+			<div id="info" class="alert-box secondary">Ready.</div>
+			<p></p>
+			<div class="four columns">
+				<p>Indent with:
+					<label><input type="radio" name="indent" id="onetab" value="onetab" checked> tab</label>
+					<label><input type="radio" name="indent" id="twospaces" value="twospaces"> 2 spaces</label>
+					<label><input type="radio" name="indent" id="fourspaces" value="fourspaces"> 4 spaces</label>
+				</p>
+			</div>
+			<div class="four columns">
+				<p>String literal quotes:
+					<label><input checked type="radio" name="quotes" id="singlequotes" value="singlequotes"> single (')</label>
+					<label><input type="radio" name="quotes" id="doublequotes" value="doublequotes"> double (")</label>
+					<label><input type="radio" name="quotes" id="autoquotes" value="autoquotes"> automatic</label>
+				</p>
+			</div>
+			<div class="four columns">
+				<p><input class="medium radius button right" type="button" value="Rewrite" id="rewritebutton"></p>
+			</div>
+		</div>
+	</div>
+	<input type="text" id="txtJsFile" value="serverA.js" style="width:200px;display:inline;">
+	<button onclick="loadPrgCode(true, document.getElementById('txtJsFile').value)">Load Lib Code</button>
+	<br />
+	<input type="text" id="txtHtmlFileName" value="loop" style="width:200px;display:inline;">
+	<button onclick="processProgrammingCode(document.getElementById('txtHtmlFileName').value);">Start Client Server Automation Preprocess</button>
+	<button onclick="showServerConnects();">Show number of server connections generated</button>
+	<br />
+	<input type="text" id="txt1" value="0" style="width:200px;display:inline;" />
+	<button onclick="showServerCode();">Show server code for n-th server connection, n=0,1,..., number of server connections-1</button>
+</body>
+</html>

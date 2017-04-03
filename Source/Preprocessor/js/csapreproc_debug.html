@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+  <meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="PRAGMA" content="NO-CACHE" />
+	<meta name="description" content="This is a web UI for doing client server automation preprocessing, which is provided by a JavaScript file csapreproc.js." />
+	<title>Client Server Automation Preprocessor</title>
+	<meta name="viewport" content="width=device-width" />
+	<link rel="stylesheet" type="text/css" href="../assets/orion/built-editor.css"/>
+	<link rel="stylesheet" type="text/css" href="../assets/style.css"/>
+	<link rel="stylesheet" href="../assets/foundation/foundation.min.css">
+	<script src="../clientjs/csa.js"></script>
+	<script src="csapreproc.js"></script>
+	<script type="text/javascript">
+		window.onload = function () {
+			document.getElementById('h4').innerHTML = "CSA Preprocessor JavaScript library version:" + getPreprocessorVersion();
+		}
+		function processCode() {
+			var ifr = document.getElementById('ifrHtmlFile').src;
+			var i = ifr.lastIndexOf('/');
+			ifr = ifr.substr(i + 1);
+			i = ifr.lastIndexOf('.');
+			ifr = ifr.substr(0, i);
+			var lbl = document.getElementById('spanCSA');
+			var ret = processProgrammingCode(ifr);
+			if (ret && ret.length > 0) {
+				lbl.innerHTML = 'Failed:'+ret;
+			}
+			else {
+				lbl.innerHTML = 'OK';
+			}
+		}
+		function showServerConnects() {
+			document.getElementById('spnNum').innerHTML = '<b>' + CSAPREPROC.getServerCodeCount() + '</b>';
+		}
+		function showServerCode() {
+			var idx = parseInt(document.getElementById('txt1').value);
+			CSAPREPROC.getServerCode(idx);
+		}
+		function showClientCode() {
+			CSAPREPROC.getClientCode();
+		}
+		function loadHtmlFile() {
+			var selLoaded = document.getElementById('selLoaded');
+			selLoaded.innerHTML = '';
+			CSA.ServerFile = '../readfile.php'; //for reading a javascript file into a string
+			var ifr = document.getElementById('ifrHtmlFile');
+			var src = ifr.src;
+			var idx = src.lastIndexOf('/');
+			var fn = src.substr(idx + 1);
+			idx = fn.lastIndexOf('.');
+			fn = fn.substr(0, idx);
+			var doc = ifr.contentDocument;
+			var scripts = doc.getElementsByTagName('SCRIPT');
+			if (scripts) {
+				var shref = window.location.href;
+				var fhref = shref.replace(/^.*(\\|\/|\:)/, '');
+				var w = shref.replace(fhref, '');
+				//assume testcases folder is at the same level as this web page
+				if (w.substr(w.length - 1, 1) == '/') {
+					w = w.substr(0, w.length - 1);
+				}
+				var i = w.lastIndexOf('/');
+				w = w.substr(0, i+1);
+				var h = w + 'testcases';  //HTML file folder is hardcoded
+				var ncount = 0;
+				for (var i = 0; i < scripts.length; i++) {
+					var jsfile = scripts[i].src;
+					if (jsfile) {
+						ncount++;
+					}
+				}
+				for (var i = 0; i < scripts.length; i++) {
+					var jsfile = scripts[i].src;
+					if (jsfile) {
+						if (jsfile.indexOf(h)==0) {
+							jsfile = jsfile.substr(h.length);
+						}
+						CSA.callServer({
+							ServerTypes: [],
+							ServerFiles: [
+							],
+							jsFile: jsfile,
+							code: null
+						}, null, null, callback_74sgca);
+					}
+					else {
+						var code = scripts[i].innerHTML;
+						function load_prg_code() {
+							if (ncount == 0) {
+								var op = document.createElement('option');
+								var err = CSAPREPROC.loadCode(code);
+								if (err) {
+									op.innerHTML = 'Code - loading failed:' + err;
+								}
+								else {
+									op.innerHTML = 'Code - loaded OK';
+								}
+								selLoaded.appendChild(op);
+							}
+							else {
+								setTimeout(load_prg_code, 300);
+							}
+						};
+						load_prg_code();
+					}
+				}
+			}
+			function callback_74sgca() {
+				if (CSA.values) {
+					if (CSA.values.jsfile) {
+						var fn = CSA.values.jsfile;
+						var i = fn.lastIndexOf('/');
+						if (i >= 0) {
+							fn = fn.substr(i + 1);
+						}
+						if (CSA.values.jsText) {
+							var op = document.createElement('option');
+							var err = CSAPREPROC.loadCode(CSA.values.jsText, true, fn)
+							if (err) {
+								op.innerHTML = fn + ' - loading failed:'+err;
+							}
+							else {
+								op.innerHTML = fn + ' - loaded OK';
+							}
+							selLoaded.appendChild(op);
+							ncount--;
+						}
+					}
+				}
+			}
+		}
+	</script>
+</head>
+<body>
+	<!-- Title and subtitle -->
+	<div class="row">
+		<div class="twelve columns">
+			<h3 class="subheader"><strong>Client Server Automation Preprocessor</strong><br /> processing JavaScript code to implement client-server-automation</h3>
+			<h4 id="h4"></h4>
+		</div>
+	</div>
+	<!-- Main content -->
+	<div class="row" style="width:95%">
+		<table border="0">
+			<thead>
+				<tr>
+					<th>Action</th>
+					<th>Result</th>
+				</tr>
+			</thead>
+			<tr>
+				<td><button onclick="this.disabled=true; loadHtmlFile();">1. Load HTML file</button></td>
+				<td><table border="0" style="border:none; padding:0px;"><tr><td>Loaded code:</td><td><select id="selLoaded" style="height:auto; vertical-align:top;"></select></td></tr></table></td>
+			</tr>
+			<tr>
+				<td><button onclick="this.disabled=true; processCode();">2. Start Client Server Automation Preprocess</button></td>
+				<td><span id="spanCSA"></span></td>
+			</tr>
+			<tr>
+				<td><button onclick="showServerConnects();">3. Show number of server connections generated:</button></td>
+				<td><span id="spnNum">0</span></td>
+			</tr>
+			<tr>
+				<td><button onclick="showServerCode();">Show server code for n-th server connection</button></td>
+				<td><span>server code index n:</span><input type="text" id="txt1" value="0" style="width:80px;display:inline;" /> n=0,1,..., number of server connections-1</td>
+			</tr>
+			<tr>
+				<td><button onclick="showClientCode();">Show client code</button></td>
+				<td></td>
+			</tr>
+		</table>
+		<div class="eight columns" style="width:100%">
+			<pre id="editor" spellcheck="false" style="height: 350px; width:100%; overflow-y:scroll;"><code>
+//Code generated is also displayed here.
+			</code></pre>
+			<div id="info" class="alert-box secondary">Ready.</div>
+			<p></p>
+			<div class="four columns">
+				<p>Indent with:
+					<label><input type="radio" name="indent" id="onetab" value="onetab" checked> tab</label>
+					<label><input type="radio" name="indent" id="twospaces" value="twospaces"> 2 spaces</label>
+					<label><input type="radio" name="indent" id="fourspaces" value="fourspaces"> 4 spaces</label>
+				</p>
+			</div>
+			<div class="four columns">
+				<p>String literal quotes:
+					<label><input checked type="radio" name="quotes" id="singlequotes" value="singlequotes"> single (')</label>
+					<label><input type="radio" name="quotes" id="doublequotes" value="doublequotes"> double (")</label>
+					<label><input type="radio" name="quotes" id="autoquotes" value="autoquotes"> automatic</label>
+				</p>
+			</div>
+			<div class="four columns">
+				
+			</div>
+		</div>
+	</div>
+	<br /><iframe id="ifrHtmlFile" src="../testcases/mailPage2.html"></iframe>
+	<script src="../esprima.js"></script>
+	<script src="../escodegen.browser.js"></script>
+	<script src="../assets/orion/built-editor.min.js"></script>
+	<script src="../assets/orion/customeditor.js"></script>
+	
+</body>
+</html>

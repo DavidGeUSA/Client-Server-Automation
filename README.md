@@ -5,6 +5,7 @@ Client Server Automation (CSA) makes web application development the same as des
 This project adds CSA to JavaScript and thus creates a new programming paradigm with following distinctive features.
 1.	It completely removes client/server related programming tasks from JavaScript programming. All server side functionalities are used in programming as if they were client side functionalities. Web programming is done in a same way as doing local programming.
 2.	It provides a freedom of choosing runtime server side handling technology without affecting web programming. For example, the user may switch between PHP, ASP.NET, Node.js, etc., without affecting web programming.
+
 For example, the following JavaScript code uses values and files entered via a web page to send an email, display results on the web page and record the process in a database. You can see that there is not a distinguishing of client operations and server operations.
 ```javascript
 var barHolder = document.getElementById('divBarHolder');

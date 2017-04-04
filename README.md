@@ -101,6 +101,7 @@ Core functionality of the CSA preprocessor is implemented in a JavaScript file, 
 ## CSA Enabled web server
 The following figure shows a CSA enabled web server.
 ![CSA Enabled Web Server](Fig16.png "CSA Enabled Web Server")
+
 To enable CSA for a web server, following files should be copied to the web server.
 1.	csa.js – this is a client side dispatcher. It handles client/server communications via AJAX. It will be added to a web page by a CSA preprocessor.
 2.	Server side dispatchers – for each server technology to be supported, a corresponding server side dispatcher is needed. It talks with csa.js to accomplish client/server communications. Three server side dispatchers are provided:

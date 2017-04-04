@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Client Server Automatio Sample -- </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src = "clientjs/FileAPIclient.js"></script>
+    <script type="text/javascript">
+        	function uploadfiles(event) {
+        		var bar = document.getElementById('bar');
+        		var lbl = document.getElementById('msg');
+        		var fileInput = document.getElementById('file1');
+        		var filesArray = fileInput.files;
+        		filesArray.onreadystatechange = function (request) {
+        			if (request.readyState == 4 && request.status == 200) {
+        				//show full progress bar minus server handle portion
+        				bar.style.width = '280px';
+        				lbl.innerHTML = 'file(s) uploaded. ' + request.responseText;
+        			}
+        		};
+        		filesArray.onprogress = function (e) {
+					//show progress
+        			bar.style.width = (280 * (e.loaded / e.total)) + 'px';
+        		}
+        		var fs = filesArray;
+				//start upload
+        		fs.Upload('uploads/');
+				//show all done
+        		bar.style.width = '300px';
+        		lbl.innerHTML = 'file(s) uploaded and saved at server';
+        		var imgHolder = document.getElementById('imgHolder');
+        		for (var i = 0; i < filesArray.length; i++) {
+        			var img = document.createElement('img');
+        			img.src = filesArray[i].URL;
+        			imgHolder.appendChild(img);
+        		}
+        		lbl.innerHTML = 'file(s) uploaded and saved at server, and displayed on the web page';
+        	}
+    </script>
+</head>
+<body>
+	<span style="display:inline;">Select files:</span><input type="file" multiple id="file1" />
+	<div style="width:300px;height:30px;border:double;">
+		<div style="background-color:blue;height:30px;width:0px;" id="bar"></div>
+	</div>
+	<br /><button onclick="uploadfiles();">Upload files</button>
+	<label id="msg"></label>
+	<div id="imgHolder"></div>
+</body>
+</html>

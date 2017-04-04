@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Client Server Automatio Sample -- Call Asynch Function Synchronously</title>
+		<meta name="description" content="Client Server Automatio makes client/server programming to be coded as local programming. This sample shows mixing client server operations in functions. Server operations are executed asynchronously but look synchronous in coding." />
+		<script src = "serverjs/serverA.js"></script>
+		<script src="clientjs/jsutil_sample.js"></script>
+		<script type="text/javascript">
+			//because server operations are involved this function will be executed asynchronously
+			function asyncfunc() {
+				var div = getEle('div2');
+				div.innerHTML = div.innerHTML + '<br>Calling async function';
+				var var1 = 'hello', idx2 = 3, idx3 = 6;
+				var serverObj1 = new serverTaskX(); //create a server object
+				var var2 = serverObj1.serverFunc1(var1, idx2); //execute a server function and get its return value
+				var var3 = serverObj1.serverFunc2(var1, idx2, idx3); //execute another server function and get its return value
+				//use values from server functions in a client operation, as if server operations are executed synchronously
+				//but actually they are executed asynchronously
+				div.innerHTML = div.innerHTML + '<br>Finish calling async function. state: var2=' + var2 + ', var3=' + var3;
+				return var2;
+			}
+			function start() {
+				var div = getEle('div2');
+				function test(func) {
+					div.innerHTML = div.innerHTML + '<br>==================<br>before func()';
+					var a = func(); //func could be an asynchronous function, but here it is used always as if it is a synchronous function
+					//use function return value, it can work only if func is executed synchronously
+					div.innerHTML = div.innerHTML + '<br>after func(), a=' + a;
+					div.innerHTML = div.innerHTML + '<br>==================';
+				}
+				//pass in an asynchronous function
+				test(asyncfunc);
+			}
+		</script>
+	</head>
+	<body>
+		<h3>Call Asynch Function Synchronously</h3>
+		<button onclick="start();">Start</button>
+		<div id="div2">test result</div>
+	</body>
+
+</html>

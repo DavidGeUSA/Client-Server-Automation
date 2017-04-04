@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Client Server Automatio Sample -- Server Operations in Client Loops</title>
+		<meta name="description" content="Client Server Automatio makes client/server programming to be coded as local programming. This sample shows mixing client server operations in loops." />
+		<script src = "serverjs/serverA.js"></script>
+		<script type="text/javascript">
+			//a client function with server operations in loops
+			function function1(var1) {
+				var idx2 = 0;
+				var div1 = document.getElementById('div1');
+				div1.innerHTML = 'input:' + var1;
+				idx2 = 2;
+				var div2 = document.getElementById('div2');
+				for (var idx3 = 0; idx3 < 4; idx3++) {//outer loop
+					for (var idx = 0; idx < 3; idx++) { //inner loop including server code
+						//some sample client code before server operations
+						idx2 = idx * 2 + idx3;
+						//some sample server operations
+						var serverObj1 = new serverTaskX(); //a server side object, it is defined in serverA.js as if it is a client side object
+						var var2 = serverObj1.serverFunc1(var1, idx2); //call a server side function and get its return value
+						var var3 = serverObj1.serverFunc2(var1, idx2, idx3); //call another server side function and get its return value
+						//some sample client operations
+						var s = div2.innerHTML;
+						//client operations may use values from server
+						div2.innerHTML = s + '<br>state: var1="' + var1
+							+ '", var2="' + var2 + '", var3="' + var3
+							+ '", idx=' + idx + '", idx2="' + idx2
+							+ ', idx3=' + idx3;
+					}
+					//some sample client code after inner loop
+					var s = div2.innerHTML;
+					s = s + '<br>===inner loop ' + idx3 + ' finishes===';
+					div2.innerHTML = s;
+				}
+				//some sample client code after outer loop
+				var div3 = document.getElementById('div3');
+				div3.innerHTML = 'All done!';
+			}
+		</script>
+	</head>
+	<body>
+		<h3>Server Operations in Client Loops</h3>
+		<input type="text" id="input1" value="test input" />
+		<button onclick="function1(document.getElementById('input1').value);">Test Loop</button>
+		<div id="div1" style="background-color:lightblue">div1</div>
+		<div id="div2" style="background-color:lightcoral">div2</div>
+		<div id="div3" style="background-color:lightgreen">div3</div>
+	</body>
+</html>

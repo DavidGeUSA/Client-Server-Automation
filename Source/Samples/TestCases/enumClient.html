@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Client Server Automatio Sample -- Enumerate client value with server operations</title>
+		<meta name="description" content="Client Server Automatio makes client/server programming to be coded as local programming. This sample shows mixing client server operations in client value enumerations. Server operations are executed asynchronously but look synchronous in coding." />
+		<script src = "serverjs/serverA.js"></script>
+		<script type="text/javascript">
+			function start() {
+				var n = 0;
+				var obj = {};
+				obj.A = 'value A';
+				obj.B = 88;
+				var div = document.getElementById('div2');
+				div.innerHTML = div.innerHTML + '<br>Enumeration starts';
+				//enumerate properties of obj
+				for (var nm in obj) {
+					div.innerHTML = div.innerHTML + '<br>Before server call with nm=' + nm;
+					var v = 'obj[' + nm + ']:' + obj[nm];
+					var v2 = n + 2;
+					var serverObj1 = new serverTaskX(); //create a server object
+					var var2 = serverObj1.serverFunc1(v, n); //execute a server function and get its return value
+					var var3 = serverObj1.serverFunc2(v, n, v2); //execute another server function and get its return value
+					//use values from server functions in a client operation, as if server operations are executed synchronously
+					//but actually they are executed asynchronously
+					div.innerHTML = div.innerHTML + '<br>After server call. obj.' + nm + '=' + obj[nm] + ', var2="' + var2 + '", var3="' + var3 + '"';
+					n++;
+				}
+				div.innerHTML = div.innerHTML + '<br>All done!';
+			}
+		</script>
+	</head>
+	<body>
+		<h3>Enumerate Client Value with Server Operations</h3>
+		<button onclick="start();">Start</button>
+		<div id="div2">test result</div>
+	</body>
+</html>

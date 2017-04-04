@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Client Server Automatio Sample -- Enumerate Server Value with mixed client server operations</title>
+		<meta name="description" content="Client Server Automatio makes client/server programming to be coded as local programming. This sample shows mixing client server operations in server value enumerations. Server operations are executed asynchronously but look synchronous in coding." />
+		<script src = "serverjs/serverB.js"></script>
+		<script type="text/javascript">
+			function start() {
+				var k = 0;
+				var div = document.getElementById('div2');
+				//simulatedObject is a server object defined in serverB.js
+				for (var nm in simulatedObject) {
+					var retfun1 = simulatedObject.fun1(k); //execute a server function and get its return value
+					//use return value from the server function in a client operation, as if the server function is executed synchronously
+					//but actually they are executed asynchronously
+					div.innerHTML = div.innerHTML + '<br>Server enumeration for key:' + nm + ', value:' + simulatedObject[nm] + ', server function = "' + retfun1 + '"';
+					k++;
+				}
+				div.innerHTML = div.innerHTML + '<br>All done';
+			}
+		</script>
+	</head>
+	<body>
+		<h3>Enumerate Server Value with mixed client server operations</h3>
+		<button onclick="start();">Start</button>
+		<div id="div2">test result</div>
+	</body>
+</html>

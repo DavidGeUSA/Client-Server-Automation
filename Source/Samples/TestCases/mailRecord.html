@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Client Server Automatio Sample -- Database Sample with mixed client server operations</title>
+		<meta name="description" content="Client Server Automatio makes client/server programming to be coded as local programming. This sample shows database operations. Server operations are executed asynchronously but look synchronous in coding." />
+		<link href="mailPage.css" rel="stylesheet" type="text/css">
+		<script src = "serverjs/database.js"></script>
+		<script src ="serverjs/mailtool.js"></script>
+		<script type="text/javascript">
+			function isEmailAddress(email) {
+				var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+				return re.test(email);
+			}
+			function isEmailAddressList(emails) {
+				if (typeof emails == 'string' && emails != null && emails.length > 0) {
+					var ss = emails.split(';');
+					for (var i = 0; i < ss.length; i++) {
+						if (ss[i].length > 0 && !isEmailAddress(ss[i])) {
+							return false;
+						}
+					}
+					return true;
+				}
+				return false;
+			}
+			function userInputValid() {
+				if (isEmailAddressList(document.getElementById('inputRecipients').value)) {
+					if (!((typeof (document.getElementById('inputSubject').value) == 'undefined' || document.getElementById('inputSubject').value == null || document.getElementById('inputSubject').value.length == 0))) {
+						if (!((typeof (document.getElementById('textareaBody').value) == 'undefined' || document.getElementById('textareaBody').value == null || document.getElementById('textareaBody').value.length == 0))) {
+							return true;
+						}
+						else {
+							document.getElementById('labelMessage').innerHTML = 'Email body is empty';
+						}
+					}
+					else {
+						document.getElementById('labelMessage').innerHTML = 'Email subject is empty';
+					}
+				}
+				else {
+					document.getElementById('labelMessage').innerHTML = 'Invalid email recipients';
+				}
+				return false;
+			}
+			//an event handler with mixed client server operations
+			function createMailRecord() {
+				if (userInputValid()) {
+					var subject = document.getElementById('inputSubject').value;
+					var mailbody = document.getElementById('textareaBody').value;
+					var recipients = document.getElementById('inputRecipients').value;
+					//create a server object which is defined in database.js
+					var Db1 = new Database('database1');
+					//execute a few server functions
+					Db1.setCommand('Insert into EmailRecord (Subject, Body, Recipients, RequestTime) Values (@Subject, @Body, @Recipients, @RequestTime)');
+					Db1.addParameter('@Subject', 0, 200, subject);
+					Db1.addParameter('@Body', 16, 2000, mailbody);
+					Db1.addParameter('@Recipients', 16, 2000, recipients);
+					Db1.addParameter('@RequestTime', 6, 8, Date());
+					var dberr = Db1.execute();
+					//code branching using a server expression and involving client and server execution paths
+					if (dberr.length == 0) {
+						//excute a client operation
+						document.getElementById('labelMessage').innerHTML = dberr;
+						//code branching using a server function call
+					}
+					else {
+						//a client operation involving server value
+						document.getElementById('labelMessage').innerHTML = 'Database error:' + dberr;
+					}
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<h3>Database Sample with mixed client server operations</h3>
+		<table border="0">
+			<colgroup><col class="sidemargin"><col><col class="sidemargin"></colgroup>
+			<tbody>
+				<tr><td></td><td>
+					<table id="dataEntry" border="0">
+						<colgroup><col class="caption"></colgroup>
+						<tbody>
+							<tr><td>Recipients:</td><td><input id="inputRecipients" type="text" value="test@mydomain.com"></td></tr>
+							<tr><td>Subject:</td><td><input id="inputSubject" type="text" value="TEST"></td></tr>
+							<tr><td>Email body:</td><td><textarea id="textareaBody" rows="10">TEST</textarea></td></tr>
+							<tr><td></td><td><button id="button1" value="" onclick="createMailRecord();">Create email record</button></td></tr>
+							<tr><td>Status:</td><td id="td1"><label id="labelMessage">Missing recipients</label></td></tr>
+						</tbody>
+					</table></td><td></td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+	</body>
+</html>

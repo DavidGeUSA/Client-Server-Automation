@@ -94,6 +94,7 @@ The above JavaScript code uses server side objects and functionalities in the sa
 ```
 ## How Client Server Automation Works?
 This project implements CSA via two parts of work: 1. a CSA preprocessor to refactor web programming made by human developers; 2. runtime support files to handle client server related functionalities weaved into web programming by the CSA preprocessor.
+
 ![Use CSA](CSA.png "Use CSA")
 ## CSA Preprocessor
 Core functionality of the CSA preprocessor is implemented in a JavaScript file, csapreproc.js. A web page, csapreproc.html, is used to host csapreproc.js. A web server environment is needed to launch csapreproc.html. A command line utility program is created to launch csapreproc.html to process human coding. You use command line parameters to specify human coding to be processed.
